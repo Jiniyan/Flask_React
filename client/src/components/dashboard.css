@@ -1,0 +1,48 @@
+body {
+    background: linear-gradient(to bottom, #ffffff 0%, #b0c4de 100%);
+    color: #333;
+    font-family: 'Arial', sans-serif;
+}
+.card {
+    margin: 15px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+.card:hover {
+    transform: scale(1.02);
+}
+.card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.card-text {
+    font-size: 1.2rem;
+}
+.btn {
+    border-radius: 5px;
+}
+.navy-blue {
+    background-color: #003366;
+    color: white;
+}
+.light-blue {
+    background-color: #e6f0f6;
+    color: #003366;
+}
+.custom-range {
+    margin-top: 10px;
+}
+h1 {
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #003366;
+}
+.list-group-item {
+    background-color: #f8f9fa;
+    color: #333;
+}
+.list-group-item:hover {
+    background-color: #e9ecef;
+}
