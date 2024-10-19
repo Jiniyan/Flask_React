@@ -77,5 +77,17 @@ def start_simulation():
     # Here you would implement the logic to start the simulation.
     return jsonify({"status": "Simulation started"}), 200
 
+
+
+@app.route('/api/data', methods=['GET'])
+def get_data():
+    data = {
+        'total_tests': 5,
+        'active_simulations': 2
+    }
+    return jsonify(data)
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)
