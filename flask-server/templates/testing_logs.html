@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing Logs</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(to bottom, #ffffff 0%, #b0c4de 100%); /* Gradient from white to light blue */
+            color: #333;
+            font-family: 'Arial', sans-serif;
+        }
+        h1 {
+            margin: 20px 0;
+            text-align: center;
+            color: #003366; /* Navy color for the title */
+        }
+        .card {
+            margin: 15px;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .list-group-item {
+            background-color: #f8f9fa; /* Light background for log items */
+            color: #333; /* Dark text color */
+        }
+        .list-group-item:hover {
+            background-color: #e9ecef; /* Slightly darker on hover */
+        }
+        .navy-blue {
+            background-color: #003366; /* Dark navy for header */
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Testing Logs</h1>
+        <div class="card navy-blue">
+            <div class="card-body">
+                <h5 class="card-title">Log Entries</h5>
+                <ul class="list-group">
+                    {% for log in logs %}
+                        <li class="list-group-item">{{ log.date.strftime('%Y-%m-%d') }}: {{ log.status }}</li>
+                    {% endfor %}
+                </ul>
+                <a href="dashboard.html" class="btn btn-light mt-3">Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

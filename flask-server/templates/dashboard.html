@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battery Simulation Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(to bottom, #ffffff 0%, #b0c4de 100%); /* Gradient from white to light blue */
+            color: #333;
+            font-family: 'Arial', sans-serif;
+        }
+        .card {
+            margin: 15px;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: scale(1.02); /* Scale effect on hover */
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .card-text {
+            font-size: 1.2rem;
+        }
+        .btn {
+            border-radius: 5px;
+        }
+        .navy-blue {
+            background-color: #003366; /* Dark navy for card backgrounds */
+            color: white;
+        }
+        .light-blue {
+            background-color: #e6f0f6; /* Light blue for card backgrounds */
+            color: #003366; /* Navy text color */
+        }
+        .custom-range {
+            margin-top: 10px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #003366; /* Navy color for the title */
+        }
+        .list-group-item {
+            background-color: #f8f9fa; /* Light background for log items */
+            color: #333; /* Dark text color */
+        }
+        .list-group-item:hover {
+            background-color: #e9ecef; /* Slightly darker on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Battery Simulation Dashboard</h1>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card navy-blue">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Tests</h5>
+                        <p class="card-text" id="totalTests">{{ data.total_tests }}</p>
+                        <select class="form-control" id="testRangeSelect">
+                            <option value="daily">Today</option>
+                            <option value="weekly">Last Week</option>
+                            <option value="monthly">This Month</option>
+                            <option value="yearly">This Year</option>
+                        </select>
+                        <button class="btn btn-light mt-2" id="updateTests">Update</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card light-blue">
+                    <div class="card-body">
+                        <h5 class="card-title">Active Simulations</h5>
+                        <p class="card-text">{{ data.active_simulations }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card navy-blue">
+                    <div class="card-body">
+                        <h5 class="card-title">Errors Detected</h5>
+                        <p class="card-text" id="errorsDetected">{{ data.errors_detected }}</p>
+                        <select class="form-control" id="errorRangeSelect">
+                            <option value="daily">Today</option>
+                            <option value="weekly">Last Week</option>
+                            <option value="monthly">This Month</option>
+                            <option value="yearly">This Year</option>
+                        </select>
+                        <button class="btn btn-light mt-2" id="updateErrors">Update</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card navy-blue">
+                    <div class="card-body">
+                        <h5 class="card-title">Frequency</h5>
+                        <input type="range" min="10" max="100" value="50" class="custom-range" id="frequencySlider">
+                        <p class="card-text" id="frequencyValue">{{ data.simulation_controls.frequency }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card navy-blue">
+                    <div class="card-body">
+                        <h5 class="card-title">Amplitude</h5>
+                        <input type="range" min="1" max="10" value="5" class="custom-range" id="amplitudeSlider">
+                        <p class="card-text" id="amplitudeValue">{{ data.simulation_controls.amplitude }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 text-center">
+                <button class="btn btn-light" id="updateControls">Update Controls</button>
+                <button class="btn btn-success" id="startSimulation">Start Simulation</button>
+                <a href="/testing_logs" class="btn btn-info mt-2">View Test Logs</a> <!-- Updated Button Link -->
+            </div>
+            <div class="col-md-12">
+                <div class="card navy-blue">
+                    <div class="card-body">
+                        <h5 class="card-title">Test Logs</h5>
+                        <ul class="list-group">
+                            {% for log in data.test_logs %}
+                                <li class="list-group-item">{{ log.date.strftime('%Y-%m-%d') }}: {{ log.status }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById('frequencySlider').addEventListener('input', function() {
+            document.getElementById('frequencyValue').innerText = this.value + 'Hz';
+        });
+
+        document.getElementById('amplitudeSlider').addEventListener('input', function() {
+            document.getElementById('amplitudeValue').innerText = this.value + 'V';
+        });
+
+        document.getElementById('updateControls').addEventListener('click', function() {
+            const frequency = document.getElementById('frequencySlider').value + 'Hz';
+            const amplitude = document.getElementById('amplitudeSlider').value + 'V';
+
+            fetch('/api/update_controls', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ frequency: frequency, amplitude: amplitude })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Updated controls:', data);
+            })
+            .catch((error) => {
+                console.error('Error updating controls:', error);
+            });
+        });
+
+        document.getElementById('updateTests').addEventListener('click', function() {
+            const range = document.getElementById('testRangeSelect').value;
+            fetch(`/api/get_tests?range=${range}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('totalTests').innerText = data.total_tests;
+                })
+                .catch((error) => {
+                    console.error('Error updating total tests:', error);
+                });
+        });
+
+        document.getElementById('updateErrors').addEventListener('click', function() {
+            const range = document.getElementById('errorRangeSelect').value;
+            fetch(`/api/get_tests?range=${range}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('errorsDetected').innerText = data.total_tests; // Reuse API for demonstration
+                })
+                .catch((error) => {
+                    console.error('Error updating errors:', error);
+                });
+        });
+
+        document.getElementById('startSimulation').addEventListener('click', function() {
+            fetch('/api/start_simulation', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.status);
+            })
+            .catch((error) => {
+                console.error('Error starting simulation:', error);
+            });
+        });
+    </script>
+</body>
+</html>
